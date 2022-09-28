@@ -1,5 +1,7 @@
 import axios from 'axios';
+import moment from 'moment';
 
+const year = moment().format('YYYY');
 interface GraphQLResponse {
     data: {
         rateLimit: {
@@ -11,14 +13,14 @@ interface GraphQLResponse {
     }
 }
 export class GithubService {
-    static async loadUserPRs(name: string, page = 1): Promise<number> {
+    static async loadUserPRs(name: string): Promise<number> {
         const {data} : {data: GraphQLResponse} = await axios.post('https://api.github.com/graphql', {
             query: `
                 query {
                   rateLimit{
                     remaining
                   }
-                  search (first: 100 type: ISSUE query: "label:hacktoberfest-accepted,hacktoberfest -label:spam is:closed author:${name} is:pr sort:created-desc merged:2022-10-01..2022-10-31") {
+                  search (first: 1 type: ISSUE query: "-label:spam is:closed author:${name} is:pr sort:created-desc merged:${year}-10-01..${year}-10-31") {
                     issueCount
                   }
                 }
