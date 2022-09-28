@@ -20,7 +20,7 @@ export class GithubService {
                   rateLimit{
                     remaining
                   }
-                  search (first: 1 type: ISSUE query: "-label:spam is:closed author:${name} is:pr sort:created-desc merged:${year}-10-01..${year}-10-31") {
+                  search (first: 1 type: ISSUE query: "-label:spam,invalid is:closed author:${name} is:pr sort:created-desc merged:${year}-10-01..${year}-10-31") {
                     issueCount
                   }
                 }
