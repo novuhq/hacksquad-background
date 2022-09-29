@@ -10,6 +10,7 @@ const [host, port] = (process.env.REDIS_URL || '127.0.0.1:6379').split(':');
 export const connection = new IORedis({
     host,
     port: Number(port),
+    password: process.env.REDIS_PASSWORD,
     reconnectOnError(err) {
         return true;
     },
