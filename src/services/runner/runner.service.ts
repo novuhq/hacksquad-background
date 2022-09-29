@@ -6,7 +6,10 @@ import moment from "moment";
 import {QueueEvents, Worker} from 'bullmq';
 import IORedis from 'ioredis';
 
+const [host, port] = (process.env.REDIS_URL || '127.0.0.1:6379').split(':');
 export const connection = new IORedis({
+    host,
+    port: Number(port),
     reconnectOnError(err) {
         return true;
     },
