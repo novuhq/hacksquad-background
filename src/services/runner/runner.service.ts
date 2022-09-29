@@ -32,7 +32,9 @@ export const QueueService = (queue: QueueInterface<any>[]) => {
             )
         );
 
-        const queueEvents = new QueueEvents(s.name());
+        const queueEvents = new QueueEvents(s.name(), {
+            connection
+        });
         queueEvents.on('completed', ({ jobId }) => {
             console.log(`processed ${s.name()} ${jobId}`);
         });
