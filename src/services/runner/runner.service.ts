@@ -5,8 +5,13 @@ import { green } from "cli-color";
 import moment from "moment";
 import {QueueEvents, Worker} from 'bullmq';
 import IORedis from 'ioredis';
+import Redis from "ioredis/built/Redis";
 
-export const connection = new IORedis(process.env.REDIS_URL!);
+let conn: Redis;
+export const getConnection = () => {
+    conn = conn || new IORedis(process.env.REDIS_URL!);
+    return conn;
+}
 
 export const CronService = (cron: CronAbstract<any>[]) => {
     return cron.map((s) => {
@@ -25,6 +30,7 @@ export const CronService = (cron: CronAbstract<any>[]) => {
 };
 
 export const QueueService = (queue: QueueInterface<any>[]) => {
+    const connection = getConnection();
     return queue.map((s) => {
         console.log(
             green(

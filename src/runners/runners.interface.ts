@@ -1,5 +1,5 @@
 import {Queue} from "bullmq";
-import {connection} from "../services/runner/runner.service";
+import {getConnection} from "../services/runner/runner.service";
 
 export interface QueueInterface<T> {
   name(): string;
@@ -14,6 +14,7 @@ export abstract class CronAbstract<T>{
   abstract handle(): void;
   abstract schedule(): string;
   pushQueue(data: T) {
+    const connection = getConnection();
     queueList[this.name()] = queueList[this.name()] || new Queue(this.name(), {
       connection
     });
