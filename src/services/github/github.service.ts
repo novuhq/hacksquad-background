@@ -14,6 +14,7 @@ interface GraphQLResponse {
 }
 export class GithubService {
     static async loadUserPRs(name: string): Promise<number> {
+        console.log('Calculating ' + name);
         const {data} : {data: GraphQLResponse} = await axios.post('https://api.github.com/graphql', {
             query: `
                 query {
