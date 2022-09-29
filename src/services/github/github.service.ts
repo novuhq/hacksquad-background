@@ -12,10 +12,17 @@ interface GraphQLResponse {
         }
     }
 }
+
+const axiosInstance = axios.create({
+    baseURL: 'https://api.github.com',
+    headers: {
+        Authorization: `Basic ${process.env.GITHUB_AUTH}`
+    }
+})
 export class GithubService {
     static async loadUserPRs(name: string): Promise<number> {
         console.log('Calculating ' + name);
-        const {data} : {data: GraphQLResponse} = await axios.post('https://api.github.com/graphql', {
+        const {data} : {data: GraphQLResponse} = await axiosInstance.post('/graphql', {
             query: `
                 query {
                   rateLimit{
@@ -26,12 +33,36 @@ export class GithubService {
                   }
                 }
             `
-        }, {
-            headers: {
-                Authorization: `Basic ${process.env.GITHUB_AUTH}`
-            }
         });
 
         return data.data.search.issueCount;
+    }
+
+    static async createTeam(name: string) {
+        return (
+            await axiosInstance.post(`/orgs/${process.env.GITHUB_ORGANIZATION}/teams`, {
+                name,
+            })
+        ).data;
+    }
+
+    static async createDiscussion(githubTeamId: number) {
+        return (
+            await axiosInstance.post(`/orgs/${process.env.GITHUB_ORGANIZATION}/team/${githubTeamId}/discussions`, {
+                title: 'Welcome to HackSquad!',
+                body: 'Hi Everybody! Welcome to HackSquad, this is the initial discussion to kick start your conversation, feel free to share with each other information or another communication method! Good luck!',
+                private: true
+            })
+        ).data;
+    }
+
+    static async inviteToOrganization(githubTeamId: number, githubEmail: string) {
+        return (
+            await axiosInstance.post(`/orgs/${process.env.GITHUB_ORGANIZATION}/invitations`, {
+                email: githubEmail,
+                role: 'direct_member',
+                team_ids: [githubTeamId],
+            })
+        ).data;
     }
 }
