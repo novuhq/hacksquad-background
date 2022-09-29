@@ -25,7 +25,7 @@ export const CronService = (cron: CronAbstract<any>[]) => {
                 ).format("DD/MM/YYYY HH:mm")}`
             )
         );
-        schedule.scheduleJob(s.schedule(), s.handle);
+        schedule.scheduleJob(s.schedule(), () => s.handle());
     });
 };
 
