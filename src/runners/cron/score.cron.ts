@@ -3,7 +3,7 @@ import {prisma} from "../../services/database/connection";
 
 export class ScoreCron extends CronAbstract<string> {
     name() {
-        return "Update Score";
+        return "Scores";
     }
 
     schedule() {

@@ -8,7 +8,14 @@ interface GraphQLResponse {
             remaining: number
         },
         search: {
-            issueCount: number
+            issueCount: number,
+            edges: Array<{
+                node: {
+                    createdAt: string,
+                    title: string,
+                    url: string
+                }
+            }>
         }
     }
 }
@@ -20,27 +27,35 @@ const axiosInstance = axios.create({
     }
 })
 export class GithubService {
-    static async loadUserPRs(name: string): Promise<number> {
+    static async loadUserPRs(name: string): Promise<{total: number, issues: Array<{createdAt: string, title: string, url: string}>}> {
         console.log('Calculating ' + name);
         try {
             const {data}: { data: GraphQLResponse } = await axiosInstance.post('/graphql', {
                 query: `
-                query {
-                  rateLimit{
-                    remaining
-                  }
-                  search (first: 1 type: ISSUE query: "-label:spam,invalid is:closed author:${name} is:pr sort:created-desc merged:${year}-10-01..${year}-10-31") {
-                    issueCount
-                  }
+query {
+    rateLimit{
+      remaining
+    }
+    search (first: 100 type: ISSUE query: "-label:spam,invalid is:closed author:${name} is:pr sort:created-desc merged:${year}-10-01..${year}-10-31") {
+        issueCount
+        edges {
+            node {
+                ... on PullRequest {
+                    createdAt
+                    title
+                    url
                 }
+            }
+        }
+    }
+}
             `
             });
 
-            return data.data.search.issueCount;
+            return {total: data.data.search.issueCount || 0, issues: data?.data?.search?.edges?.map(e => e.node) || []};
         }
         catch (err) {
-            console.log(err);
-            return 0;
+            return {total: 0, issues: []};
         }
     }
 

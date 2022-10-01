@@ -1,10 +1,12 @@
 import {CronAbstract, QueueInterface} from "../runners.interface";
 import {prisma} from "../../services/database/connection";
 import {GithubService} from "../../services/github/github.service";
+import moment from 'moment';
+import createSlug from "../../services/helpers/create.slug";
 
 export class ScoreQueue implements QueueInterface<string> {
     name() {
-        return "Update Score";
+        return "Scores";
     }
 
     numWorkers() {
@@ -17,21 +19,31 @@ export class ScoreQueue implements QueueInterface<string> {
                 id: arg
             },
             select: {
+                name: true,
+                slug: true,
                 users: true
             }
         });
 
         let score = 0;
+        const prs = [];
         for (const user of (data?.users || [])) {
-            score += await GithubService.loadUserPRs(user.handle!);
+            const {total, issues} = await GithubService.loadUserPRs(user.handle!);
+            score += total;
+            prs.push(...issues);
         }
+
+        // @ts-ignore
+        prs.sort((a, b) => moment(b.createdAt).toDate() - moment(a.createdAt).toDate())
 
         await prisma.team.update({
             where: {
-                id: arg
+                id: arg,
             },
             data: {
-                score
+                slug: data?.slug! || createSlug(data?.name || ''),
+                score,
+                prs: JSON.stringify(prs)
             }
         })
     }
