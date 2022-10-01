@@ -43,7 +43,7 @@ model Team {
   ownerId         String @unique
   owner           User @relation(name: "owner", fields: [ownerId], references: [id])
   users           User[]
-  prs             String?
+  prs             String? @unique
   slug            String? @db.VarChar(255)
   githubTeamId    Int?
   allowAutoAssign Boolean
