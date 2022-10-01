@@ -22,8 +22,9 @@ const axiosInstance = axios.create({
 export class GithubService {
     static async loadUserPRs(name: string): Promise<number> {
         console.log('Calculating ' + name);
-        const {data} : {data: GraphQLResponse} = await axiosInstance.post('/graphql', {
-            query: `
+        try {
+            const {data}: { data: GraphQLResponse } = await axiosInstance.post('/graphql', {
+                query: `
                 query {
                   rateLimit{
                     remaining
@@ -33,9 +34,14 @@ export class GithubService {
                   }
                 }
             `
-        });
+            });
 
-        return data.data.search.issueCount;
+            return data.data.search.issueCount;
+        }
+        catch (err) {
+            console.log(err);
+            return 0;
+        }
     }
 
     static async createTeam(name: string) {
