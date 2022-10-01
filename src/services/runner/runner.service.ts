@@ -47,6 +47,10 @@ export const QueueService = (queue: QueueInterface<any>[]) => {
         new Worker(s.name(), async job => {
             await s.handle(job.data);
         }, {
+            limiter: {
+                max: 1,
+                duration: 1000,
+            },
             concurrency: s.numWorkers(),
             autorun: true,
             connection
