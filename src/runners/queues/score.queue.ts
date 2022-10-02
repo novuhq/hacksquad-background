@@ -25,9 +25,11 @@ export class ScoreQueue implements QueueInterface<string> {
             }
         });
 
+        const filterUsers = (data?.users || []).filter(f => !f.disqualified);
+
         let score = 0;
         const prs = [];
-        for (const user of (data?.users || [])) {
+        for (const user of filterUsers) {
             const {total, issues} = await GithubService.loadUserPRs(user.handle!);
             score += total;
             prs.push(...issues);
