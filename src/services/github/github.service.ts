@@ -41,6 +41,7 @@ query {
         edges {
             node {
                 ... on PullRequest {
+                    id
                     createdAt
                     title
                     url
