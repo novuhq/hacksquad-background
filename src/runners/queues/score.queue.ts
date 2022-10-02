@@ -40,7 +40,8 @@ export class ScoreQueue implements QueueInterface<string> {
             where: {
                 pr: {
                     in: prs.map(p => p.id)
-                }
+                },
+                status: 'DELETED'
             }
         });
 
