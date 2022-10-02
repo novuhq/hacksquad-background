@@ -11,6 +11,7 @@ interface GraphQLResponse {
             issueCount: number,
             edges: Array<{
                 node: {
+                    id: string;
                     createdAt: string,
                     title: string,
                     url: string
@@ -27,7 +28,7 @@ const axiosInstance = axios.create({
     }
 })
 export class GithubService {
-    static async loadUserPRs(name: string): Promise<{total: number, issues: Array<{createdAt: string, title: string, url: string}>}> {
+    static async loadUserPRs(name: string): Promise<{total: number, issues: Array<{id: string, createdAt: string, title: string, url: string}>}> {
         console.log('Calculating ' + name);
         try {
             const {data}: { data: GraphQLResponse } = await axiosInstance.post('/graphql', {

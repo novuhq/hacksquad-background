@@ -34,7 +34,15 @@ export class ScoreQueue implements QueueInterface<string> {
         }
 
         // @ts-ignore
-        prs.sort((a, b) => moment(b.createdAt).toDate() - moment(a.createdAt).toDate())
+        prs.sort((a, b) => moment(b.createdAt).toDate() - moment(a.createdAt).toDate());
+
+        const findDeletedPRs = await prisma.report.findMany({
+            where: {
+                pr: {
+                    in: prs.map(p => p.id)
+                }
+            }
+        });
 
         await prisma.team.update({
             where: {
@@ -42,7 +50,7 @@ export class ScoreQueue implements QueueInterface<string> {
             },
             data: {
                 slug: data?.slug! || createSlug(data?.name || ''),
-                score,
+                score: score - (findDeletedPRs?.length || 0),
                 prs: JSON.stringify(prs)
             }
         })
