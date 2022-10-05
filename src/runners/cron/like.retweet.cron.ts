@@ -5,7 +5,7 @@ import moment from "moment";
 
 export class LikeRetweetCron extends CronAbstract<{id: string, tweets: string[]}> {
     name() {
-        return "Like and Retweet";
+        return "Like and Retweetz";
     }
 
     schedule() {

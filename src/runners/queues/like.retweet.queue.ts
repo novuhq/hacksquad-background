@@ -4,7 +4,7 @@ import {prisma} from "../../services/database/connection";
 
 export class LikeRetweetQueue implements QueueInterface<{id: string, tweets: string[]}> {
     name() {
-        return "Like and Retweet";
+        return "Like and Retweetz";
     }
 
     numWorkers() {
@@ -15,7 +15,7 @@ export class LikeRetweetQueue implements QueueInterface<{id: string, tweets: str
         const social = await prisma.social.findFirst({
             where: {
                 type: 'TWITTER',
-                userId: arg.id
+                id: arg.id
             }
         });
 
@@ -43,7 +43,9 @@ export class LikeRetweetQueue implements QueueInterface<{id: string, tweets: str
                     },
                 });
             }
-            catch (err) {}
+            catch (err) {
+                console.log(err);
+            }
             try {
                 await axios.post(`https://api.twitter.com/2/users/${id}/retweets`, {
                     "tweet_id": tweet
@@ -54,7 +56,9 @@ export class LikeRetweetQueue implements QueueInterface<{id: string, tweets: str
                     },
                 });
             }
-            catch (err) {}
+            catch (err) {
+                console.log(err);
+            }
         }));
     }
 }
