@@ -21,7 +21,11 @@ export class ScoreQueue implements QueueInterface<string> {
             select: {
                 name: true,
                 slug: true,
-                users: true
+                users: {
+                    include: {
+                        social: true
+                    }
+                }
             }
         });
 
@@ -31,7 +35,9 @@ export class ScoreQueue implements QueueInterface<string> {
         const prs = [];
         for (const user of filterUsers) {
             const {total, issues} = await GithubService.loadUserPRs(user.handle!);
-            score += total;
+            const bonus = user.social.find(p => p.type === 'TWITTER') ? 2 : 0;
+            console.log(bonus);
+            score += total + bonus;
             prs.push(...issues);
         }
 
