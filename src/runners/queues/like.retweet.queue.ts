@@ -4,7 +4,7 @@ import {prisma} from "../../services/database/connection";
 
 export class LikeRetweetQueue implements QueueInterface<{id: string, tweets: string[]}> {
     name() {
-        return "Like and Retweetz";
+        return "Like and Retweet Now";
     }
 
     numWorkers() {
@@ -25,12 +25,14 @@ export class LikeRetweetQueue implements QueueInterface<{id: string, tweets: str
 
 
         const {
-            data: { id },
+            data: { data: {id} },
         } = await axios.get(`https://api.twitter.com/2/users/me`, {
                 headers: {
                     Authorization: `Bearer ${social.accessToken}`,
                 },
             });
+
+        console.log(id);
 
         await Promise.all(arg.tweets.map(async tweet => {
             try {
@@ -39,7 +41,7 @@ export class LikeRetweetQueue implements QueueInterface<{id: string, tweets: str
                 }, {
                     headers: {
                         // 'Content-Type': 'application/x-www-form-urlencoded',
-                        Authorization: `Bearer ${process.env.TWITTER_AUTH}`,
+                        Authorization: `Bearer ${social.accessToken}`,
                     },
                 });
             }
@@ -52,7 +54,7 @@ export class LikeRetweetQueue implements QueueInterface<{id: string, tweets: str
                 }, {
                     headers: {
                         // 'Content-Type': 'application/x-www-form-urlencoded',
-                        Authorization: `Bearer ${process.env.TWITTER_AUTH}`,
+                        Authorization: `Bearer ${social.accessToken}`,
                     },
                 });
             }
