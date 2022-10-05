@@ -12,14 +12,14 @@ config();
 
 (async () => {
     CronService([
-        new LikeRetweetCron()
-      // new ScoreCron(),
-      // new TeamCron()
+      new LikeRetweetCron(),
+      new ScoreCron(),
+      new TeamCron()
   ]);
 
   QueueService([
-      // new ScoreQueue(),
-      // new TeamQueue()
+      new ScoreQueue(),
+      new TeamQueue(),
       new LikeRetweetQueue()
   ]);
 })();
