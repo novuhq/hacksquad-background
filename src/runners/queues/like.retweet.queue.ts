@@ -42,7 +42,9 @@ export class LikeRetweetQueue implements QueueInterface<{id: string, tweets: str
                         Authorization: `Bearer ${process.env.TWITTER_AUTH}`,
                     },
                 });
-
+            }
+            catch (err) {}
+            try {
                 await axios.post(`https://api.twitter.com/2/users/${id}/retweets`, {
                     "tweet_id": tweet
                 }, {
