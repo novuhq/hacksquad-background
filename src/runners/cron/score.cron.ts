@@ -6,6 +6,10 @@ export class ScoreCron extends CronAbstract<string> {
         return "Scores";
     }
 
+    autostart(): boolean {
+        return true;
+    }
+
     schedule() {
         return '0 * * * *';
     }

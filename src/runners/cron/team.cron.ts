@@ -6,6 +6,10 @@ export class TeamCron extends CronAbstract<string> {
         return "Add to a new organization team";
     }
 
+    autostart(): boolean {
+        return true;
+    }
+
     schedule() {
         return '*/3 * * * *';
     }

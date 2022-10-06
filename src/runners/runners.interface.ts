@@ -13,6 +13,7 @@ export abstract class CronAbstract<T>{
   abstract name(): string;
   abstract handle(): void;
   abstract schedule(): string;
+  abstract autostart(): boolean;
   pushQueue(data: T, delay = 0) {
     const connection = getConnection();
     queueList[this.name()] = queueList[this.name()] || new Queue(this.name(), {

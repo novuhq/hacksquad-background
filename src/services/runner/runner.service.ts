@@ -16,7 +16,9 @@ export const getConnection = () => {
 export const CronService = (cron: CronAbstract<any>[]) => {
     return cron.map((s) => {
         const scheduleTime = s.schedule();
-        s.handle();
+        if (s.autostart()) {
+            s.handle();
+        }
 
         console.log(
             green(

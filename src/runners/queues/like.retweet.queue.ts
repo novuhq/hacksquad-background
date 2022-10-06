@@ -6,7 +6,7 @@ import {timer} from "../../services/helpers/timer";
 
 export class LikeRetweetQueue implements QueueInterface<{id: string, tweets: string[]}> {
     name() {
-        return "Like and Retweet Nowz";
+        return "Like and Retweet Now";
     }
 
     numWorkers() {
