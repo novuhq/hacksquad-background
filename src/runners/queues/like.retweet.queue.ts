@@ -2,6 +2,7 @@ import {QueueInterface} from "../runners.interface";
 import axios from "axios";
 import {prisma} from "../../services/database/connection";
 import {stringify} from "querystring";
+import {timer} from "../../services/helpers/timer";
 
 export class LikeRetweetQueue implements QueueInterface<{id: string, tweets: string[]}> {
     name() {
@@ -122,5 +123,7 @@ export class LikeRetweetQueue implements QueueInterface<{id: string, tweets: str
                 console.log(err);
             }
         }));
+
+        await timer(2000);
     }
 }
