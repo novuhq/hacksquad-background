@@ -23,7 +23,10 @@ export class ScoreQueue implements QueueInterface<string> {
                 slug: true,
                 users: {
                     include: {
-                        social: true
+                        social: true,
+                        _count: {
+                            select: {invited: true}
+                        }
                     }
                 }
             }
@@ -36,7 +39,8 @@ export class ScoreQueue implements QueueInterface<string> {
         for (const user of filterUsers) {
             const {total, issues} = await GithubService.loadUserPRs(user.handle!);
             const bonus = user.social.find(p => p.type === 'TWITTER') ? 2 : 0;
-            score += total + bonus;
+            const invitedUsers = user?._count?.invited > 0 ? user?._count?.invited > 5 ? 5 : user?._count?.invited : 0;
+            score += total + bonus + invitedUsers;
             prs.push(...issues);
         }
 

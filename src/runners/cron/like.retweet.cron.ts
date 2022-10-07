@@ -13,7 +13,7 @@ export class LikeRetweetCron extends CronAbstract<{id: string, tweets: string[]}
     }
 
     autostart(): boolean {
-        return true;
+        return false;
     }
 
     start = async (page =  1, perPage = 10) => {
