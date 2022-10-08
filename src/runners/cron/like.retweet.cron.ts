@@ -2,7 +2,7 @@ import {CronAbstract} from "../runners.interface";
 import {prisma} from "../../services/database/connection";
 import axios from "axios";
 import moment from "moment";
-import {chunk} from 'lodash';
+import {chunk, shuffle} from 'lodash';
 export class LikeRetweetCron extends CronAbstract<{id: string, tweets: string[]}> {
     name() {
         return "Like and Retweet Now";
@@ -28,8 +28,11 @@ export class LikeRetweetCron extends CronAbstract<{id: string, tweets: string[]}
              return moment().subtract(1, 'hour').isBefore(moment(f.created_at));
          }).map((p: any) => p.id);
 
-        const list = await prisma.social.findMany({
+        const all = await prisma.social.findMany({
         });
+
+
+        const list = shuffle(all).slice(0, 20);
 
         const chunkIt = chunk(list, 49);
         let delay = 0;
