@@ -109,19 +109,19 @@ export class LikeRetweetQueue implements QueueInterface<{id: string, tweets: str
             catch (err) {
 
             }
-            try {
-                await axios.post(`https://api.twitter.com/2/users/${id}/retweets`, {
-                    "tweet_id": tweet
-                }, {
-                    headers: {
-                        // 'Content-Type': 'application/x-www-form-urlencoded',
-                        Authorization: `Bearer ${social.accessToken}`,
-                    },
-                });
-            }
-            catch (err) {
-                console.log(err);
-            }
+            // try {
+            //     await axios.post(`https://api.twitter.com/2/users/${id}/retweets`, {
+            //         "tweet_id": tweet
+            //     }, {
+            //         headers: {
+            //             // 'Content-Type': 'application/x-www-form-urlencoded',
+            //             Authorization: `Bearer ${social.accessToken}`,
+            //         },
+            //     });
+            // }
+            // catch (err) {
+            //     console.log(err);
+            // }
         }));
 
         await timer(2000);
