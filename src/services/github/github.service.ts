@@ -46,6 +46,12 @@ query {
                     createdAt
                     title
                     url
+                    repository {
+                        url
+                    }
+                    author {
+                        login
+                    }
                 }
             }
         }
