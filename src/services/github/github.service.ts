@@ -2,6 +2,16 @@ import axios from 'axios';
 import moment from 'moment';
 
 const year = moment().format('YYYY');
+interface PullsById {
+    "data": {
+        "nodes": Array<{
+            "id": string,
+            "createdAt": string,
+            "title": string,
+            "url": string
+        }>
+    }
+}
 interface GraphQLResponse {
     data: {
         rateLimit: {
@@ -28,6 +38,34 @@ const axiosInstance = axios.create({
     }
 })
 export class GithubService {
+    static async loadPrDetails(ids: string[]): Promise<PullsById> {
+        try {
+            const {data}: { data: PullsById } = await axiosInstance.post('/graphql', {
+                query: `
+query { 
+  nodes(ids: ${JSON.stringify(ids)}) {
+    ... on PullRequest {
+        id
+        createdAt
+        title
+        url
+    }
+  }
+}
+            `
+            });
+
+            return data;
+        }
+        catch (err) {
+            return {
+                data: {
+                    nodes: []
+                }
+            }
+        }
+    }
+
     static async loadUserPRs(name: string): Promise<{total: number, issues: Array<{id: string, createdAt: string, title: string, url: string}>}> {
         console.log('Calculating ' + name);
         try {
