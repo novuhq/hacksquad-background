@@ -32,12 +32,16 @@ export class ScoreQueue implements QueueInterface<string> {
             }
         });
 
-        const filterUsers = (data?.users || []).filter(f => !f.disqualified);
+        const filterUsers = data?.users || [];
 
         let score = 0;
         const prs = [];
         const userArray = [] as Array<{id: string, score: number, issues: Array<{id: string, createdAt: string, title: string, url: string}>}>;
         for (const user of filterUsers) {
+            if (user.disqualified) {
+                userArray.push({id: user.id, score: 0, issues: []});
+                continue;
+            }
             const {total, issues} = await GithubService.loadUserPRs(user.handle!);
             const bonus = user.social.find(p => p.type === 'TWITTER') ? 2 : 0;
             const invitedUsers = user?._count?.invited > 0 ? user?._count?.invited > 5 ? 5 : user?._count?.invited : 0;
