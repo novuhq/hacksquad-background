@@ -11,13 +11,16 @@ export class UpdateWinnersCron extends CronAbstract<string> {
     }
 
     autostart(): boolean {
-        return true;
+        return false;
     }
 
     async handle() {
         const allTeams = await prisma.team.findMany({
             where: {
-                disqualified: false
+                disqualified: false,
+                score: {
+                    gt: 0
+                }
             },
             orderBy: {
                 score: 'desc'
