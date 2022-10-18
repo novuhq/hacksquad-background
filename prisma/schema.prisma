@@ -87,6 +87,11 @@ model ActionLogs {
 
   @@index([pr])
   @@index([prDetails])
+  @@index([actionType])
+  @@index([createdAt])
+  @@index([teamId])
+  @@index([adminId])
+  @@index([userId])
 }
 
 model Report {
@@ -113,6 +118,7 @@ model User {
   email               String?   @unique
   emailVerified       DateTime?
   image               String?
+  score               Int     @default(0)
   moderator           Boolean @default(false)
   cleaner             Boolean @default(false)
   handle              String?
@@ -129,6 +135,28 @@ model User {
   social              Social[]
   userActionLogs      ActionLogs[] @relation("affectedUser")
   adminActionLogs     ActionLogs[] @relation("admin")
+  winners             Winners[]
+}
+
+model Winners {
+    id            String    @id @default(cuid())
+    month         Int
+    year          Int
+    userId        String
+    lastDateClaim DateTime
+    type          WinnerType
+    user          User      @relation(fields: [userId], references: [id])
+    claimed       DateTime?
+    @@unique([month, year, userId, type])
+    @@index([month])
+    @@index([year])
+    @@index([userId])
+    @@index([claimed])
+}
+
+enum WinnerType {
+    EXTRA
+    COMPETITION
 }
 
 model VerificationToken {

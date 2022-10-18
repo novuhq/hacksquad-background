@@ -36,11 +36,13 @@ export class ScoreQueue implements QueueInterface<string> {
 
         let score = 0;
         const prs = [];
+        const userArray = [] as Array<{id: string, score: number, issues: Array<{id: string, createdAt: string, title: string, url: string}>}>;
         for (const user of filterUsers) {
             const {total, issues} = await GithubService.loadUserPRs(user.handle!);
             const bonus = user.social.find(p => p.type === 'TWITTER') ? 2 : 0;
             const invitedUsers = user?._count?.invited > 0 ? user?._count?.invited > 5 ? 5 : user?._count?.invited : 0;
             score += total + bonus + invitedUsers;
+            userArray.push({id: user.id, score: total + bonus + invitedUsers, issues});
             prs.push(...issues);
         }
 
@@ -65,6 +67,18 @@ export class ScoreQueue implements QueueInterface<string> {
                 score: score - (findDeletedPRs?.length || 0),
                 prs: JSON.stringify(prs)
             }
-        })
+        });
+
+        for (const user of userArray) {
+            const newScore = +(user.score - user.issues.map(p => p.id).filter(p => findDeletedPRs.some(g => g.pr === p)).length);
+            await prisma.user.update({
+                where: {
+                    id: user.id
+                },
+                data: {
+                    score: newScore
+                }
+            })
+        }
     }
 }
