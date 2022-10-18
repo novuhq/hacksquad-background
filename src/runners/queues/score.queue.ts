@@ -46,7 +46,7 @@ export class ScoreQueue implements QueueInterface<string> {
             const bonus = user.social.find(p => p.type === 'TWITTER') ? 2 : 0;
             const invitedUsers = user?._count?.invited > 0 ? user?._count?.invited > 5 ? 5 : user?._count?.invited : 0;
             score += total + bonus + invitedUsers;
-            userArray.push({id: user.id, score: total + bonus + invitedUsers, issues});
+            userArray.push({id: user.id, score: total, issues});
             prs.push(...issues);
         }
 
