@@ -11,11 +11,13 @@ import {PrUpdateLogsCron} from "./runners/cron/pr.update.logs.cron";
 import {PrUpdateLogsQueue} from "./runners/queues/pr.update.logs.queue";
 import {UpdateWinnersCron} from "./runners/cron/update.winners.cron";
 import {UpdateWinnersQueue} from "./runners/queues/update.winners.queue";
+import {DevToArticlesCron} from "./runners/cron/dev.to.articles.cron";
 
 config();
 
 (async () => {
     CronService([
+      new DevToArticlesCron(),
       new LikeRetweetCron(),
       new ScoreCron(),
       new TeamCron(),
