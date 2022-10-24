@@ -111,7 +111,7 @@ query {
         return (
             await axiosInstance.post(`/orgs/${process.env.GITHUB_ORGANIZATION}/team/${githubTeamId}/discussions`, {
                 title: 'Welcome to HackSquad!',
-                body: 'Hi Everybody! Welcome to HackSquad, this is the initial discussion to kick start your conversation, feel free to share with each other information or another communication method! Good luck!',
+                body: 'Hi Everybody! Welcome to HackSquad, this is the initial discussion to kick start your conversation, feel free to share information with each other here or move to another communication method! Good luck!',
                 private: true
             })
         ).data;
