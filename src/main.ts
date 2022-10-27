@@ -12,24 +12,26 @@ import {PrUpdateLogsQueue} from "./runners/queues/pr.update.logs.queue";
 import {UpdateWinnersCron} from "./runners/cron/update.winners.cron";
 import {UpdateWinnersQueue} from "./runners/queues/update.winners.queue";
 import {DevToArticlesCron} from "./runners/cron/dev.to.articles.cron";
+import {NovuCron} from "./runners/cron/novu.cron";
 
 config();
 
 (async () => {
     CronService([
-      new DevToArticlesCron(),
-      new LikeRetweetCron(),
-      new ScoreCron(),
-      new TeamCron(),
-      new PrUpdateLogsCron(),
-      new UpdateWinnersCron()
+      // new DevToArticlesCron(),
+      // new LikeRetweetCron(),
+      // new ScoreCron(),
+      // new TeamCron(),
+      // new PrUpdateLogsCron(),
+      // new UpdateWinnersCron()
+        new NovuCron()
   ]);
 
   QueueService([
-      new ScoreQueue(),
-      new TeamQueue(),
-      new LikeRetweetQueue(),
-      new PrUpdateLogsQueue(),
-      new UpdateWinnersQueue()
+      // new ScoreQueue(),
+      // new TeamQueue(),
+      // new LikeRetweetQueue(),
+      // new PrUpdateLogsQueue(),
+      // new UpdateWinnersQueue()
   ]);
 })();

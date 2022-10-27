@@ -31,16 +31,34 @@ interface GraphQLResponse {
     }
 }
 
-const axiosInstance = axios.create({
+interface GraphQLPResponse {
+    data: {
+        search: {
+            edges: Array<{
+                cursor: string,
+                node: {
+                    author: {
+                        login: string
+                    }
+                }
+            }>
+        }
+    }
+}
+
+const axiosInstance = () => axios.create({
     baseURL: 'https://api.github.com',
     headers: {
-        Authorization: `Basic ${process.env.GITHUB_AUTH}`
+        // @ts-ignore
+        get Authorization() {
+            return `Basic ${process.env.GITHUB_AUTH}`
+        }
     }
 })
 export class GithubService {
     static async loadPrDetails(ids: string[]): Promise<PullsById> {
         try {
-            const {data}: { data: PullsById } = await axiosInstance.post('/graphql', {
+            const {data}: { data: PullsById } = await axiosInstance().post('/graphql', {
                 query: `
 query { 
   nodes(ids: ${JSON.stringify(ids)}) {
@@ -69,13 +87,13 @@ query {
     static async loadUserPRs(name: string): Promise<{total: number, issues: Array<{id: string, createdAt: string, title: string, url: string}>}> {
         console.log('Calculating ' + name);
         try {
-            const {data}: { data: GraphQLResponse } = await axiosInstance.post('/graphql', {
+            const {data}: { data: GraphQLResponse } = await axiosInstance().post('/graphql', {
                 query: `
 query {
     rateLimit{
       remaining
     }
-    search (first: 100 type: ISSUE query: "-label:spam,invalid is:closed author:${name} is:pr sort:created-desc merged:${year}-10-01..${year}-10-31") {
+    search (first: 100 type: ISSUE query: "-label:spam,invalid is:closed author:${name} is:pr sort:created-desc merged:${year}-10-01..${year}-11-01") {
         issueCount
         edges {
             node {
@@ -101,7 +119,7 @@ query {
 
     static async createTeam(name: string) {
         return (
-            await axiosInstance.post(`/orgs/${process.env.GITHUB_ORGANIZATION}/teams`, {
+            await axiosInstance().post(`/orgs/${process.env.GITHUB_ORGANIZATION}/teams`, {
                 name,
             })
         ).data;
@@ -109,7 +127,7 @@ query {
 
     static async createDiscussion(githubTeamId: number) {
         return (
-            await axiosInstance.post(`/orgs/${process.env.GITHUB_ORGANIZATION}/team/${githubTeamId}/discussions`, {
+            await axiosInstance().post(`/orgs/${process.env.GITHUB_ORGANIZATION}/team/${githubTeamId}/discussions`, {
                 title: 'Welcome to HackSquad!',
                 body: 'Hi Everybody! Welcome to HackSquad, this is the initial discussion to kick start your conversation, feel free to share with each other information or another communication method! Good luck!',
                 private: true
@@ -119,11 +137,52 @@ query {
 
     static async inviteToOrganization(githubTeamId: number, githubEmail: string) {
         return (
-            await axiosInstance.post(`/orgs/${process.env.GITHUB_ORGANIZATION}/invitations`, {
+            await axiosInstance().post(`/orgs/${process.env.GITHUB_ORGANIZATION}/invitations`, {
                 email: githubEmail,
                 role: 'direct_member',
                 team_ids: [githubTeamId],
             })
         ).data;
+    }
+
+    static async loadAllMembersMergedPr(after=''): Promise<string[]> {
+        console.log(`taking after ${after}`);
+        const query = `
+        query {
+          search(
+            first: 100
+            type: ISSUE,
+            ${after ? `after: "${after}"` : ''}
+            query: "org:novuhq is:pr is:merged merged:${year}-10-01..${year}-11-01"
+          ) {
+            issueCount,
+            edges {
+                cursor
+                node {
+                  ... on PullRequest {
+                    author {
+                      login
+                    }
+                 }
+                }
+            }
+          }
+        }
+        `;
+
+        try {
+            const {data}: { data: GraphQLPResponse } = await axiosInstance().post('/graphql', {
+                query
+            });
+
+            return [
+                ...data.data.search.edges.map(e => e.node.author.login),
+                ...data.data.search.edges.length === 100 ? await this.loadAllMembersMergedPr(data.data.search.edges[data.data.search.edges.length - 1].cursor) : []
+            ]
+
+        }
+        catch (err) {
+            return []
+        }
     }
 }
