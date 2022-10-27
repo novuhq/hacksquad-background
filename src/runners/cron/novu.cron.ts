@@ -18,6 +18,10 @@ export class NovuCron extends CronAbstract<string> {
     }
 
     start = async (page =  1, perPage = 10) => {
+        if (moment().month() === 10) {
+            return ;
+        }
+
         const all = await GithubService.loadAllMembersMergedPr();
         const calculate = all.reduce((all, current) => {
             all[current] = (all[current] || 0) + 1;
