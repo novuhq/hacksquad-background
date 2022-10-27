@@ -18,20 +18,20 @@ config();
 
 (async () => {
     CronService([
-      // new DevToArticlesCron(),
-      // new LikeRetweetCron(),
-      // new ScoreCron(),
-      // new TeamCron(),
-      // new PrUpdateLogsCron(),
-      // new UpdateWinnersCron()
-        new NovuCron()
+      new DevToArticlesCron(),
+      new LikeRetweetCron(),
+      new ScoreCron(),
+      new TeamCron(),
+      new PrUpdateLogsCron(),
+      new UpdateWinnersCron(),
+      new NovuCron()
   ]);
 
   QueueService([
-      // new ScoreQueue(),
-      // new TeamQueue(),
-      // new LikeRetweetQueue(),
-      // new PrUpdateLogsQueue(),
-      // new UpdateWinnersQueue()
+      new ScoreQueue(),
+      new TeamQueue(),
+      new LikeRetweetQueue(),
+      new PrUpdateLogsQueue(),
+      new UpdateWinnersQueue()
   ]);
 })();
