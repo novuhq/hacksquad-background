@@ -93,7 +93,7 @@ query {
     rateLimit{
       remaining
     }
-    search (first: 100 type: ISSUE query: "-label:spam,invalid is:closed author:${name} is:pr sort:created-desc merged:${year}-10-01..${year}-11-01") {
+    search (first: 100 type: ISSUE query: "-label:spam,invalid is:closed author:${name} is:pr sort:created-desc merged:${year}-10-01..${year}-10-31T23:59:00") {
         issueCount
         edges {
             node {
@@ -153,7 +153,7 @@ query {
             first: 100
             type: ISSUE,
             ${after ? `after: "${after}"` : ''}
-            query: "org:novuhq is:pr is:merged merged:${year}-10-01..${year}-11-01"
+            query: "org:novuhq is:pr is:merged merged:${year}-10-01..${year}-10-31T23:59:00"
           ) {
             issueCount,
             edges {
