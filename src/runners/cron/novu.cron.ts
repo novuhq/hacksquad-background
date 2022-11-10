@@ -10,7 +10,7 @@ export class NovuCron extends CronAbstract<string> {
     }
 
     autostart(): boolean {
-        return true;
+        return false;
     }
 
     schedule() {
