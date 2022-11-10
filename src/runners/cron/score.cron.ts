@@ -7,11 +7,11 @@ export class ScoreCron extends CronAbstract<string> {
     }
 
     autostart(): boolean {
-        return false;
+        return true;
     }
 
     schedule() {
-        return '0 * * * *';
+        return '0 0 1 1 *';
     }
 
      start = async (page =  1, perPage = 10) => {
@@ -23,8 +23,8 @@ export class ScoreCron extends CronAbstract<string> {
             }
         });
 
-        await Promise.all(list.map(p => {
-            return this.pushQueue(p.id);
+        await Promise.all(list.map((p, index) => {
+            return this.pushQueue(p.id, (index + 1) * 1000);
         }));
 
         if (list.length === perPage) {
