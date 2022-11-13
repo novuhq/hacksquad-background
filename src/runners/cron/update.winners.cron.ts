@@ -12,7 +12,7 @@ export class UpdateWinnersCron extends CronAbstract<string> {
     }
 
     autostart(): boolean {
-        return false;
+        return true;
     }
 
     async handle() {
