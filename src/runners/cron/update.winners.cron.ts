@@ -33,7 +33,7 @@ export class UpdateWinnersCron extends CronAbstract<string> {
         const winning = allTeams.filter(f => f.score! >= findTeamScore!);
         for (const win of winning) {
             await timer(500);
-            this.pushQueue(win.id);
+            await this.pushQueue(win.id);
         }
     }
 }
