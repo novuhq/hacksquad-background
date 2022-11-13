@@ -1,5 +1,6 @@
 import {CronAbstract} from "../runners.interface";
 import {prisma} from "../../services/database/connection";
+import {timer} from "../../services/helpers/timer";
 
 export class UpdateWinnersCron extends CronAbstract<string> {
     name() {
@@ -30,6 +31,9 @@ export class UpdateWinnersCron extends CronAbstract<string> {
 
         const findTeamScore = allTeams.slice(0, 60).pop()?.score;
         const winning = allTeams.filter(f => f.score! >= findTeamScore!);
-        await Promise.all(winning.map(win => this.pushQueue(win.id)));
+        for (const win of winning) {
+            await timer(500);
+            this.pushQueue(win.id);
+        }
     }
 }
