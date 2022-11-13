@@ -113,6 +113,7 @@ query {
             return {total: data.data.search.issueCount || 0, issues: data?.data?.search?.edges?.map(e => e.node) || []};
         }
         catch (err) {
+            console.log(`There was a problem getting ${name}`);
             return {total: 0, issues: []};
         }
     }
