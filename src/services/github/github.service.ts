@@ -93,7 +93,7 @@ query {
     rateLimit{
       remaining
     }
-    search (first: 100 type: ISSUE query: "-label:spam,invalid is:closed author:${name} is:pr sort:created-desc merged:${year}-10-01..${year}-10-31T23:59:00") {
+    search (first: 100 type: ISSUE query: "-label:spam,invalid is:closed author:${name?.trim()} is:pr sort:created-desc merged:${year}-10-01..${year}-10-31T23:59:00") {
         issueCount
         edges {
             node {
