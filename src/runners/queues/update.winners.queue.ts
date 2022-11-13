@@ -40,6 +40,7 @@ export class UpdateWinnersQueue implements QueueInterface<string> {
                // sendOneNotification('winner', {}, {id: user.id, email: user.email!});
            }
            catch (err) {
+               console.log(`${user.handle} already exists`)
            }
 
        }
