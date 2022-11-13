@@ -37,7 +37,7 @@ export class UpdateWinnersQueue implements QueueInterface<string> {
                        year: +moment().format('YYYY')
                    }
                });
-               sendOneNotification('winner', {}, {id: user.id, email: user.email!});
+               // sendOneNotification('winner', {}, {id: user.id, email: user.email!});
            }
            catch (err) {
            }
