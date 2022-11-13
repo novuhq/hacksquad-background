@@ -45,7 +45,7 @@ export class ScoreQueue implements QueueInterface<string> {
             }
             const {total, issues} = await GithubService.loadUserPRs(user.handle!);
             const bonus = (user.social.find(p => p.type === 'TWITTER') ? 2 : 0) + (user.social.find(p => p.type === 'DEVTO') ? 1 : 0) + user.votes.length;
-            const invitedUsers = user?._count?.invited > 0 ? user?._count?.invited > 5 ? 5 : user?._count?.invited : 0;
+            const invitedUsers = user?._count?.invited > 0 ? user?._count?.invited > 5 ? 5 : +user?._count?.invited : 0;
             score += total + bonus + invitedUsers;
             userArray.push({id: user.id, score: total, issues});
             prs.push(...issues);
@@ -63,27 +63,37 @@ export class ScoreQueue implements QueueInterface<string> {
             }
         });
 
-        await prisma.team.update({
-            where: {
-                id: arg,
-            },
-            data: {
-                slug: data?.slug! || createSlug(data?.name || ''),
-                score: score - (findDeletedPRs?.length || 0),
-                prs: JSON.stringify(prs)
-            }
-        });
+        try {
+            await prisma.team.update({
+                where: {
+                    id: arg,
+                },
+                data: {
+                    slug: data?.slug! || createSlug(data?.name || ''),
+                    score: score - (findDeletedPRs?.length || 0),
+                    prs: JSON.stringify(prs)
+                }
+            });
+        }
+        catch (err) {
+            console.log(err);
+        }
 
         for (const user of userArray) {
             const newScore = +(user.score - user.issues.map(p => p.id).filter(p => findDeletedPRs.some(g => g.pr === p)).length);
-            await prisma.user.update({
-                where: {
-                    id: user.id
-                },
-                data: {
-                    score: newScore
-                }
-            })
+            try {
+                await prisma.user.update({
+                    where: {
+                        id: user.id
+                    },
+                    data: {
+                        score: newScore
+                    }
+                });
+            }
+            catch (err) {
+                console.log(err);
+            }
         }
     }
 }
