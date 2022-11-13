@@ -23,8 +23,8 @@ export class ScoreCron extends CronAbstract<string> {
             }
         });
 
-        await Promise.all(list.map((p, index) => {
-            return this.pushQueue(p.id, (index + 1) * 1000);
+        await Promise.all(list.map((p) => {
+            return this.pushQueue(p.id);
         }));
 
         if (list.length === perPage) {
