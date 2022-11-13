@@ -19,7 +19,7 @@ import moment from "moment";
             month: moment().month(),
             year: moment().year(),
             lastDateClaim: moment().add(2, 'month').toDate(),
-            type: 'EXTRA'
+            type: 'COMPETITION'
         }
     });
 })();
