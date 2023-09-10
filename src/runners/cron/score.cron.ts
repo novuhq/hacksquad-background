@@ -7,7 +7,7 @@ export class ScoreCron extends CronAbstract<string> {
     }
 
     autostart(): boolean {
-        return false;
+        return true;
     }
 
     schedule() {

@@ -1,30 +1,47 @@
-import axios from 'axios';
 import moment from 'moment';
+import {graphql} from "@octokit/graphql";
 
-const year = moment().format('YYYY');
+const runQuery = async (query: string, token: string): Promise<any> => {
+    try {
+        const data = await graphql(query, {
+            headers: {
+                authorization: `token ${token}`,
+            }
+        });
+
+        return {data};
+    } catch (err) {
+        const data = await graphql(query, {
+            headers: {
+                authorization: `Basic ${process.env.GITHUB_AUTH}`,
+            }
+        });
+
+        console.log(data);
+        return {data};
+    }
+}
+
+const year = 2022;
+// const year = moment().format('YYYY');
+
 interface PullsById {
     "data": {
         "nodes": Array<{
-            "id": string,
-            "createdAt": string,
-            "title": string,
-            "url": string
+            "id": string, "createdAt": string, "title": string, "url": string
         }>
     }
 }
+
 interface GraphQLResponse {
     data: {
         rateLimit: {
             remaining: number
-        },
-        search: {
-            issueCount: number,
-            edges: Array<{
+        }, search: {
+            issueCount: number, edges: Array<{
+                cursor: string,
                 node: {
-                    id: string;
-                    createdAt: string,
-                    title: string,
-                    url: string
+                    id: string; createdAt: string, title: string, url: string
                 }
             }>
         }
@@ -35,8 +52,7 @@ interface GraphQLPResponse {
     data: {
         search: {
             edges: Array<{
-                cursor: string,
-                node: {
+                cursor: string, node: {
                     author: {
                         login: string
                     }
@@ -46,20 +62,10 @@ interface GraphQLPResponse {
     }
 }
 
-const axiosInstance = () => axios.create({
-    baseURL: 'https://api.github.com',
-    headers: {
-        // @ts-ignore
-        get Authorization() {
-            return `Basic ${process.env.GITHUB_AUTH}`
-        }
-    }
-})
 export class GithubService {
-    static async loadPrDetails(ids: string[]): Promise<PullsById> {
+    static async loadPrDetails(ids: string[], token: string): Promise<PullsById> {
         try {
-            const {data}: { data: PullsById } = await axiosInstance().post('/graphql', {
-                query: `
+            const {data}: { data: PullsById } = await runQuery(`
 query { 
   nodes(ids: ${JSON.stringify(ids)}) {
     ... on PullRequest {
@@ -70,12 +76,10 @@ query {
     }
   }
 }
-            `
-            });
+            `, token);
 
             return data;
-        }
-        catch (err) {
+        } catch (err) {
             return {
                 data: {
                     nodes: []
@@ -84,18 +88,26 @@ query {
         }
     }
 
-    static async loadUserPRs(name: string): Promise<{total: number, issues: Array<{id: string, createdAt: string, title: string, url: string}>}> {
+    static async loadUserPRs(name: string, token: string, after = ''): Promise<{ total: number, issues: Array<{ id: string, createdAt: string, title: string, url: string }> }> {
         console.log('Calculating ' + name);
+        if (after) {
+            console.log('getting after');
+        }
         try {
-            const {data}: { data: GraphQLResponse } = await axiosInstance().post('/graphql', {
-                query: `
-query {
+            const data: GraphQLResponse = await runQuery(`
+{
     rateLimit{
       remaining
     }
-    search (first: 100 type: ISSUE query: "-label:spam,invalid is:closed author:${name?.trim()} is:pr sort:created-desc merged:${year}-10-01..${year}-10-31T23:59:00") {
+    search (
+        first: 100
+        type: ISSUE
+        ${after ? `after: "${after}"` : ''}
+        query: "-label:spam,invalid is:closed author:davidsoderberg is:pr sort:created-desc merged:${year}-10-01..${year}-10-31T23:59:00"
+    ) {
         issueCount
         edges {
+            cursor
             node {
                 ... on PullRequest {
                     id
@@ -107,46 +119,20 @@ query {
         }
     }
 }
-            `
-            });
+            `, token);
 
-            return {total: data.data.search.issueCount || 0, issues: data?.data?.search?.edges?.map(e => e.node) || []};
-        }
-        catch (err) {
+            return {
+                total: data.data.search.issueCount || 0,
+                issues: [...data?.data?.search?.edges.map(p => p.node), ...(data?.data?.search?.edges?.length || 0) < 100 ? [] : (await this.loadUserPRs(name, token, data.data.search.edges[data.data.search.edges.length - 1].cursor)).issues]
+            };
+
+        } catch (err) {
             console.log(`There was a problem getting ${name}`);
             return {total: 0, issues: []};
         }
     }
 
-    static async createTeam(name: string) {
-        return (
-            await axiosInstance().post(`/orgs/${process.env.GITHUB_ORGANIZATION}/teams`, {
-                name,
-            })
-        ).data;
-    }
-
-    static async createDiscussion(githubTeamId: number) {
-        return (
-            await axiosInstance().post(`/orgs/${process.env.GITHUB_ORGANIZATION}/team/${githubTeamId}/discussions`, {
-                title: 'Welcome to HackSquad!',
-                body: 'Hi Everybody! Welcome to HackSquad, this is the initial discussion to kick start your conversation, feel free to share with each other information or another communication method! Good luck!',
-                private: true
-            })
-        ).data;
-    }
-
-    static async inviteToOrganization(githubTeamId: number, githubEmail: string) {
-        return (
-            await axiosInstance().post(`/orgs/${process.env.GITHUB_ORGANIZATION}/invitations`, {
-                email: githubEmail,
-                role: 'direct_member',
-                team_ids: [githubTeamId],
-            })
-        ).data;
-    }
-
-    static async loadAllMembersMergedPr(after=''): Promise<string[]> {
+    static async loadAllMembersMergedPr(after = '', token: string): Promise<string[]> {
         console.log(`taking after ${after}`);
         const query = `
         query {
@@ -172,17 +158,13 @@ query {
         `;
 
         try {
-            const {data}: { data: GraphQLPResponse } = await axiosInstance().post('/graphql', {
-                query
-            });
+            const {data}: { data: GraphQLPResponse } = await runQuery(query, token);
 
             return [
                 ...data.data.search.edges.map(e => e.node.author.login),
-                ...data.data.search.edges.length === 100 ? await this.loadAllMembersMergedPr(data.data.search.edges[data.data.search.edges.length - 1].cursor) : []
-            ]
+                ...data.data.search.edges.length === 100 ? await this.loadAllMembersMergedPr(data.data.search.edges[data.data.search.edges.length - 1].cursor, token) : []]
 
-        }
-        catch (err) {
+        } catch (err) {
             return []
         }
     }

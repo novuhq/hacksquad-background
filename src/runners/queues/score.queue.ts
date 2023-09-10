@@ -1,4 +1,4 @@
-import {CronAbstract, QueueInterface} from "../runners.interface";
+import {QueueInterface} from "../runners.interface";
 import {prisma} from "../../services/database/connection";
 import {GithubService} from "../../services/github/github.service";
 import moment from 'moment';
@@ -23,6 +23,7 @@ export class ScoreQueue implements QueueInterface<string> {
                 slug: true,
                 users: {
                     include: {
+                        accounts: true,
                         votes: true,
                         social: true,
                         _count: {
@@ -43,34 +44,51 @@ export class ScoreQueue implements QueueInterface<string> {
                 userArray.push({id: user.id, score: 0, issues: []});
                 continue;
             }
-            const {total, issues} = await GithubService.loadUserPRs(user.handle!);
-            const bonus = (user.social.find(p => p.type === 'TWITTER') ? 2 : 0) + (user.social.find(p => p.type === 'DEVTO') ? 1 : 0) + user.votes.length;
+            const {total, issues} = await GithubService.loadUserPRs(user.handle!, user?.accounts?.[0]?.access_token || '');
+
+            const bonus = (user.social.find(p => p.type === 'DEVTO') ? 1 : 0) + user.votes.length;
             const invitedUsers = user?._count?.invited > 0 ? user?._count?.invited > 5 ? 5 : +user?._count?.invited : 0;
             score += total + bonus + invitedUsers;
             userArray.push({id: user.id, score: total, issues});
             prs.push(...issues);
         }
 
-        // @ts-ignore
-        prs.sort((a, b) => moment(b.createdAt).toDate() - moment(a.createdAt).toDate());
-
-        const findDeletedPRs = await prisma.report.findMany({
+        const prMap = prs.map(p => 'https://github.com' + new URL(p.url).pathname.split('/').slice(0, 3).join('/'));
+        const findRepositories = Array.from(new Set(prMap));
+        const getPreviousRepositories = await prisma.repositories.findMany({
             where: {
-                pr: {
-                    in: prs.map(p => p.id)
-                },
-                status: 'DELETED'
+                url: {
+                    in: findRepositories
+                }
             }
         });
 
+        for (const repository of findRepositories) {
+            try {
+                await prisma.repositories.create({
+                    data: {
+                        url: repository, date: new Date(), status: 'NOT_DETERMINED',
+                    }
+                });
+            }
+            catch (err) {}
+        }
+
+        // @ts-ignore
+        prs.sort((a, b) => moment(b.createdAt).toDate() - moment(a.createdAt).toDate());
+
+        const notAccepted = getPreviousRepositories.filter(p => p.status !== 'ACCEPTED').map(p => p.url);
+
         try {
+            const totalScore = prMap.filter(p => notAccepted.includes(p)).length;
+
             await prisma.team.update({
                 where: {
                     id: arg,
                 },
                 data: {
                     slug: data?.slug! || createSlug(data?.name || ''),
-                    score: score - (findDeletedPRs?.length || 0),
+                    score: score - totalScore,
                     prs: JSON.stringify(prs)
                 }
             });
@@ -80,13 +98,17 @@ export class ScoreQueue implements QueueInterface<string> {
         }
 
         for (const user of userArray) {
-            const newScore = +(user.score - user.issues.map(p => p.id).filter(p => findDeletedPRs.some(g => g.pr === p)).length);
+            const totalScore = user.issues.map(p => 'https://github.com' + new URL(p.url).pathname.split('/').slice(0, 3).join('/')).filter(p => notAccepted.includes(p)).length;
+            const newScore = +(user.score - totalScore);
+            const disqualified = !!(getPreviousRepositories.find(p => p.status === 'BANNED'));
+
             try {
                 await prisma.user.update({
                     where: {
                         id: user.id
                     },
                     data: {
+                        disqualified,
                         score: newScore
                     }
                 });
