@@ -103,7 +103,7 @@ query {
         first: 100
         type: ISSUE
         ${after ? `after: "${after}"` : ''}
-        query: "-label:spam,invalid is:closed author:davidsoderberg is:pr sort:created-desc merged:${year}-10-01..${year}-10-31T23:59:00"
+        query: "-label:spam,invalid is:closed author:${name} is:pr sort:created-desc merged:${year}-10-01..${year}-10-31T23:59:00"
     ) {
         issueCount
         edges {
