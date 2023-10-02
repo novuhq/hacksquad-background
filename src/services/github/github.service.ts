@@ -22,8 +22,7 @@ const runQuery = async (query: string, token: string): Promise<any> => {
     }
 }
 
-const year = 2022;
-// const year = moment().format('YYYY');
+const year = moment().format('YYYY');
 
 interface PullsById {
     "data": {
