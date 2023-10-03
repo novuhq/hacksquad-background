@@ -1,9 +1,13 @@
 import moment from 'moment';
 import {graphql} from "@octokit/graphql";
+import fetch from "node-fetch";
 
 const runQuery = async (query: string, token: string): Promise<any> => {
     try {
         const data = await graphql(query, {
+            request: {
+                fetch
+            },
             headers: {
                 authorization: `token ${token}`,
             }
