@@ -126,6 +126,7 @@ query {
             };
 
         } catch (err) {
+            console.log(err);
             console.log(`There was a problem getting ${name}`);
             return {total: 0, issues: []};
         }
