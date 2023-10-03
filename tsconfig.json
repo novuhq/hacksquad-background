@@ -5,6 +5,7 @@
     "strict": true,
     "sourceRoot": "src",
     "lib": ["esnext"],
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "suppressImplicitAnyIndexErrors": true
   }
 }
