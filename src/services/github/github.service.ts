@@ -16,6 +16,9 @@ const runQuery = async (query: string, token: string): Promise<any> => {
         return {data};
     } catch (err) {
         const data = await graphql(query, {
+            request: {
+                fetch
+            },
             headers: {
                 authorization: `Basic ${process.env.GITHUB_AUTH}`,
             }
