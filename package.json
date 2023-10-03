@@ -29,6 +29,7 @@
   "devDependencies": {
     "@types/cli-color": "^2.0.2",
     "@types/node": "^18.7.21",
+    "@types/node-fetch": "^2.6.6",
     "@types/node-schedule": "^2.1.0",
     "prisma": "^4.3.1",
     "ts-node": "^10.9.1",
