@@ -22,7 +22,7 @@ export class NovuCron extends CronAbstract<string> {
             return ;
         }
 
-        const all = await GithubService.loadAllMembersMergedPr();
+        const all = await GithubService.loadAllMembersMergedPr('', '');
         const calculate = all.reduce((all, current) => {
             all[current] = (all[current] || 0) + 1;
             return all;

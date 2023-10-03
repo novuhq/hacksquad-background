@@ -13,7 +13,7 @@ export class PrUpdateLogsQueue implements QueueInterface<string[]> {
     }
 
     async handle(arg: string[]) {
-        const prs = (await GithubService.loadPrDetails(arg)).data.nodes;
+        const prs = (await GithubService.loadPrDetails(arg, '')).data.nodes;
         for (const pr of prs) {
             await prisma.actionLogs.updateMany({
                 where: {
