@@ -11,7 +11,7 @@ export class ScoreCron extends CronAbstract<string> {
     }
 
     schedule() {
-        return '0 0 1 1 *';
+        return '0 */2 * * *';
     }
 
      start = async (page =  1, perPage = 10) => {

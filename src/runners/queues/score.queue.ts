@@ -109,7 +109,11 @@ export class ScoreQueue implements QueueInterface<string> {
         }
 
         for (const user of userArray) {
-            const totalScore = user.issues.map(p => 'https://github.com' + new URL(p.url).pathname.split('/').slice(0, 3).join('/')).filter(p => notAccepted.includes(p)).length;
+            const totalScore = user.issues.map(p => {
+                const path = new URL(p.url).pathname.split('/').slice(0, 3).join('/');
+                const removeFirstSlash = path.startsWith('/') ? p.url.slice(1) : path;
+                return 'https://github.com/' + removeFirstSlash;
+            }).filter(p => notAccepted.includes(p)).length;
             const newScore = +(user.score - totalScore);
             const disqualified = !!(getPreviousRepositories.find(p => p.status === 'BANNED'));
 
