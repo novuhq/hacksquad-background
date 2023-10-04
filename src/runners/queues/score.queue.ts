@@ -51,10 +51,11 @@ export class ScoreQueue implements QueueInterface<string> {
                 }
             });
 
-            const filterIssues = issues.filter(async p => {
+            const filterIssuesAwait = await Promise.all(issues.map(async p => {
                 const pathRepo = new URL(p.url).pathname.split('/').slice(0, 3).join('/');
-                return (await GithubService.totalRepositoryStars(pathRepo, user?.accounts?.[0]?.access_token || '')) > 200;
-            });
+                return {issue: p, stars: (await GithubService.totalRepositoryStars(pathRepo, user?.accounts?.[0]?.access_token || '')) > 200};
+            }));
+            const filterIssues = filterIssuesAwait.filter(p => p.stars).map(p => p.issue);
 
             const totalStars = votes.reduce((all: any, current: any) => all + (current.library === 'clickvote/clickvote' ? 1 : 5), 0);
             const bonus = (user.social.find(p => p.type === 'DEVTO') ? 1 : 0) + user.votes.length;
