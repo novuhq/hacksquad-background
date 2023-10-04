@@ -42,7 +42,6 @@ export class ScoreQueue implements QueueInterface<string> {
         for (const user of filterUsers) {
             if (user.disqualified) {
                 userArray.push({id: user.id, score: 0, issues: []});
-                continue;
             }
             const {total, issues} = await GithubService.loadUserPRs(user.handle!, user?.accounts?.[0]?.access_token || '');
             const votes = await prisma.starsGiven.findMany({
@@ -58,10 +57,14 @@ export class ScoreQueue implements QueueInterface<string> {
             const filterIssues = filterIssuesAwait.filter(p => p.stars).map(p => p.issue);
 
             const totalStars = votes.length;
-            const bonus = (user.social.find(p => p.type === 'DEVTO') ? 1 : 0) + user.votes.length;
             const invitedUsers = user?._count?.invited > 0 ? user?._count?.invited > 5 ? 5 : +user?._count?.invited : 0;
-            score += total + bonus + invitedUsers + totalStars;
-            userArray.push({id: user.id, score: total, issues: filterIssues});
+            if (!user.disqualified) {
+                score = 0;
+                userArray.push({id: user.id, score: total, issues: filterIssues});
+            }
+            else {
+                score += (+total) + (+invitedUsers) + (+totalStars);
+            }
             prs.push(...filterIssues);
         }
 
