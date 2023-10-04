@@ -65,7 +65,12 @@ export class ScoreQueue implements QueueInterface<string> {
             prs.push(...filterIssues);
         }
 
-        const prMap = prs.map(p => 'https://github.com' + new URL(p.url).pathname.split('/').slice(0, 3).join('/'));
+        const prMap = prs.map(p => {
+            const pathRepo = new URL(p.url).pathname.split('/').slice(0, 3).join('/');
+            const removeFirstSlash = pathRepo.startsWith('/') ? pathRepo.slice(1) : pathRepo;
+            return 'https://github.com/' + removeFirstSlash;
+        });
+
         const findRepositories = Array.from(new Set(prMap));
         const getPreviousRepositories = await prisma.repositories.findMany({
             where: {
