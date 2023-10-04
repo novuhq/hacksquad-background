@@ -154,7 +154,7 @@ query {
             return data.repository.stargazers.totalCount;
         }
         catch (err) {
-            console.log('err');
+            console.log('err', name);
             return 0;
         }
     }
