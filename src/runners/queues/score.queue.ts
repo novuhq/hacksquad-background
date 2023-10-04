@@ -120,7 +120,7 @@ export class ScoreQueue implements QueueInterface<string> {
                     },
                     data: {
                         disqualified,
-                        score: newScore
+                        score: disqualified ? 0 : newScore
                     }
                 });
             }
