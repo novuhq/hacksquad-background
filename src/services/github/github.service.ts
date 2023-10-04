@@ -139,6 +139,26 @@ query {
         }
     }
 
+    static async totalRepositoryStars(name: string, token: string): Promise<number> {
+        try {
+            const [owner, nameo] = name.split('/');
+            const {data}: { data: any } = await runQuery(`
+                    {
+                      repository(owner:"${owner}", name:"${nameo}") {
+                        stargazers {
+                          totalCount
+                        }
+                      }
+                    }
+                    `, token);
+            return data.repository.stargazers.totalCount;
+        }
+        catch (err) {
+            console.log('err');
+            return 0;
+        }
+    }
+
     static async loadAllMembersMergedPr(after = '', token: string): Promise<string[]> {
         console.log(`taking after ${after}`);
         const query = `

@@ -50,12 +50,18 @@ export class ScoreQueue implements QueueInterface<string> {
                     userId: user.id
                 }
             });
+
+            const filterIssues = issues.filter(async p => {
+                const pathRepo = new URL(p.url).pathname.split('/').slice(0, 3).join('/');
+                return (await GithubService.totalRepositoryStars(pathRepo, user?.accounts?.[0]?.access_token || '')) > 200;
+            });
+
             const totalStars = votes.reduce((all: any, current: any) => all + (current.library === 'clickvote/clickvote' ? 1 : 5), 0);
             const bonus = (user.social.find(p => p.type === 'DEVTO') ? 1 : 0) + user.votes.length;
             const invitedUsers = user?._count?.invited > 0 ? user?._count?.invited > 5 ? 5 : +user?._count?.invited : 0;
             score += total + bonus + invitedUsers + totalStars;
-            userArray.push({id: user.id, score: total, issues});
-            prs.push(...issues);
+            userArray.push({id: user.id, score: total, issues: filterIssues});
+            prs.push(...filterIssues);
         }
 
         const prMap = prs.map(p => 'https://github.com' + new URL(p.url).pathname.split('/').slice(0, 3).join('/'));
