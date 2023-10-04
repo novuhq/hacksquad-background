@@ -82,7 +82,7 @@ export class ScoreQueue implements QueueInterface<string> {
         // @ts-ignore
         prs.sort((a, b) => moment(b.createdAt).toDate() - moment(a.createdAt).toDate());
 
-        const notAccepted = getPreviousRepositories.filter(p => p.status !== 'ACCEPTED').map(p => p.url);
+        const notAccepted = getPreviousRepositories.filter(p => p.status !== 'ACCEPTED' && p.status !== 'NOT_DETERMINED').map(p => p.url);
 
         try {
             const totalScore = prMap.filter(p => notAccepted.includes(p)).length;
