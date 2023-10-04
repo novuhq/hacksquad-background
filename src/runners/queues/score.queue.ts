@@ -57,7 +57,7 @@ export class ScoreQueue implements QueueInterface<string> {
             }));
             const filterIssues = filterIssuesAwait.filter(p => p.stars).map(p => p.issue);
 
-            const totalStars = votes.reduce((all: any, current: any) => all + (current.library === 'clickvote/clickvote' ? 1 : 5), 0);
+            const totalStars = votes.length;
             const bonus = (user.social.find(p => p.type === 'DEVTO') ? 1 : 0) + user.votes.length;
             const invitedUsers = user?._count?.invited > 0 ? user?._count?.invited > 5 ? 5 : +user?._count?.invited : 0;
             score += total + bonus + invitedUsers + totalStars;
