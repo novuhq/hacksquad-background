@@ -45,10 +45,15 @@ export class ScoreQueue implements QueueInterface<string> {
                 continue;
             }
             const {total, issues} = await GithubService.loadUserPRs(user.handle!, user?.accounts?.[0]?.access_token || '');
-
+            const votes = await prisma.starsGiven.findMany({
+                where: {
+                    userId: user.id
+                }
+            });
+            const totalStars = votes.reduce((all: any, current: any) => all + (current.library === 'clickvote/clickvote' ? 1 : 5), 0);
             const bonus = (user.social.find(p => p.type === 'DEVTO') ? 1 : 0) + user.votes.length;
             const invitedUsers = user?._count?.invited > 0 ? user?._count?.invited > 5 ? 5 : +user?._count?.invited : 0;
-            score += total + bonus + invitedUsers;
+            score += total + bonus + invitedUsers + totalStars;
             userArray.push({id: user.id, score: total, issues});
             prs.push(...issues);
         }
