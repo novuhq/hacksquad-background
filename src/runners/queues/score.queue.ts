@@ -59,7 +59,7 @@ export class ScoreQueue implements QueueInterface<string> {
             const totalStars = votes.length;
             const invitedUsers = user?._count?.invited > 0 ? user?._count?.invited > 5 ? 5 : +user?._count?.invited : 0;
             if (!user.disqualified) {
-                score += (+total) + (+invitedUsers) + (+totalStars);
+                score += ((+total) * 3) + (+invitedUsers) + (+totalStars);
                 userArray.push({id: user.id, score: total, issues: filterIssues});
             }
             prs.push(...filterIssues);
