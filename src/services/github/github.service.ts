@@ -141,7 +141,8 @@ query {
 
     static async totalRepositoryStars(name: string, token: string): Promise<number> {
         try {
-            const [owner, nameo] = name.split('/');
+            const removeFirstSlash = name.startsWith('/') ? name.slice(1) : name;
+            const [owner, nameo] = removeFirstSlash.split('/');
             const {data}: { data: any } = await runQuery(`
                     {
                       repository(owner:"${owner}", name:"${nameo}") {
@@ -154,7 +155,7 @@ query {
             return data.repository.stargazers.totalCount;
         }
         catch (err) {
-            console.log('err', name);
+            console.log('err', name.startsWith('/') ? name.slice(1) : name);
             return 0;
         }
     }
