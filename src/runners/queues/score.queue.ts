@@ -38,10 +38,10 @@ export class ScoreQueue implements QueueInterface<string> {
 
         let score = 0;
         const prs = [];
-        const userArray = [] as Array<{id: string, score: number, issues: Array<{id: string, createdAt: string, title: string, url: string}>}>;
+        const userArray = [] as Array<{id: string, bonus: number, score: number, issues: Array<{id: string, createdAt: string, title: string, url: string}>}>;
         for (const user of filterUsers) {
             if (user.disqualified) {
-                userArray.push({id: user.id, score: 0, issues: []});
+                userArray.push({id: user.id, score: 0, issues: [], bonus: 0});
             }
             const {total, issues} = await GithubService.loadUserPRs(user.handle!, user?.accounts?.[0]?.access_token || '');
             const votes = await prisma.starsGiven.findMany({
@@ -59,9 +59,10 @@ export class ScoreQueue implements QueueInterface<string> {
             const totalStars = votes.length;
             const invitedUsers = user?._count?.invited > 0 ? user?._count?.invited > 5 ? 5 : +user?._count?.invited : 0;
             if (!user.disqualified) {
-                const theNewScore = ((+filterIssues.length) * 3) + (+invitedUsers) + (+totalStars);
+                const bonus = (+invitedUsers) + (+totalStars);
+                const theNewScore = ((+filterIssues.length) * 3) + bonus;
                 score += theNewScore;
-                userArray.push({id: user.id, score: theNewScore, issues: filterIssues});
+                userArray.push({id: user.id, score: theNewScore, bonus, issues: filterIssues});
             }
             prs.push(...filterIssues);
         }
@@ -131,7 +132,8 @@ export class ScoreQueue implements QueueInterface<string> {
                     },
                     data: {
                         disqualified,
-                        score: disqualified ? 0 : newScore
+                        score: disqualified ? 0 : newScore,
+                        bonus: disqualified ? 0 : user.bonus,
                     }
                 });
             }
