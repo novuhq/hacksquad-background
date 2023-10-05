@@ -126,7 +126,13 @@ export class ScoreQueue implements QueueInterface<string> {
                 return 'https://github.com/' + removeFirstSlash;
             }).filter(p => notAccepted.includes(p)).length;
             const newScore = +(user.score - totalScore);
-            const disqualified = !!(getPreviousRepositories.find(p => p.status === 'BANNED'));
+
+            const disqualified = !!user.issues.find(p => {
+                const path = new URL(p.url).pathname.split('/').slice(0, 3).join('/');
+                const removeFirstSlash = path.startsWith('/') ? p.url.slice(1) : path;
+                const gitHub = 'https://github.com/' + removeFirstSlash;
+                return getPreviousRepositories.filter(p => p.status === 'BANNED').map(p => p.url).includes(gitHub);
+            });
 
             try {
                 await prisma.user.update({
