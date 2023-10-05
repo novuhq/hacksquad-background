@@ -37,6 +37,7 @@ export class ScoreQueue implements QueueInterface<string> {
         const filterUsers = data?.users || [];
 
         let score = 0;
+        let allBonus = 0;
         const prs = [];
         const userArray = [] as Array<{id: string, bonus: number, score: number, issues: Array<{id: string, createdAt: string, title: string, url: string}>}>;
         for (const user of filterUsers) {
@@ -61,6 +62,7 @@ export class ScoreQueue implements QueueInterface<string> {
             if (!user.disqualified) {
                 const bonus = (+invitedUsers) + (+totalStars);
                 const theNewScore = ((+filterIssues.length) * 3) + bonus;
+                allBonus += bonus;
                 score += theNewScore;
                 userArray.push({id: user.id, score: theNewScore, bonus, issues: filterIssues});
             }
@@ -108,6 +110,7 @@ export class ScoreQueue implements QueueInterface<string> {
                 data: {
                     slug: data?.slug! || createSlug(data?.name || ''),
                     score: score - totalScore,
+                    bonus: allBonus,
                     prs: JSON.stringify(prs)
                 }
             });
