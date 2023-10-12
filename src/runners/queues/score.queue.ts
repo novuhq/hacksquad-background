@@ -137,7 +137,7 @@ export class ScoreQueue implements QueueInterface<string> {
             const newScore = +(user.score - totalScore);
 
             const disqualified = !!user.issues.find(p => {
-                return getPreviousRepositories.filter(p => p.status === 'BANNED').map(p => getOnlyRepo(p.url)).includes(getOnlyRepo(p.url));
+                return getPreviousRepositories.filter(p => p.status === 'BANNED').map(d => getOnlyRepo(d.url)).includes(getOnlyRepo(p.url));
             });
 
             try {
