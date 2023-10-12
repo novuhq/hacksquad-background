@@ -4,6 +4,20 @@ import {GithubService} from "../../services/github/github.service";
 import moment from 'moment';
 import createSlug from "../../services/helpers/create.slug";
 
+export const getOnlyRepo = (url: string) => {
+    const urlWithoutGithub = url.replace('https://github.com/', '').replace('https://github.com', '');
+    const firstSlash = urlWithoutGithub.startsWith('/') ? urlWithoutGithub.slice(1) : urlWithoutGithub;
+    const [owner, name] = firstSlash.split('/');
+    return `https://github.com/${owner}/${name}`;
+}
+
+export const getOwnerAndName = (url: string) => {
+    const urlWithoutGithub = url.replace('https://github.com/', '').replace('https://github.com', '');
+    const firstSlash = urlWithoutGithub.startsWith('/') ? urlWithoutGithub.slice(1) : urlWithoutGithub;
+    const [owner, name] = firstSlash.split('/');
+    return {owner, name};
+}
+
 export class ScoreQueue implements QueueInterface<string> {
     name() {
         return "Scores";
@@ -52,8 +66,7 @@ export class ScoreQueue implements QueueInterface<string> {
             });
 
             const filterIssuesAwait = await Promise.all(issues.map(async p => {
-                const pathRepo = new URL(p.url).pathname.split('/').slice(0, 3).join('/');
-                return {issue: p, stars: (await GithubService.totalRepositoryStars(pathRepo, user?.accounts?.[0]?.access_token || '')) > 200};
+                return {issue: p, stars: (await GithubService.totalRepositoryStars(getOnlyRepo(p.url), user?.accounts?.[0]?.access_token || '')) > 200};
             }));
             const filterIssues = filterIssuesAwait.filter(p => p.stars).map(p => p.issue);
 
@@ -70,9 +83,7 @@ export class ScoreQueue implements QueueInterface<string> {
         }
 
         const prMap = prs.map(p => {
-            const pathRepo = new URL(p.url).pathname.split('/').slice(0, 3).join('/');
-            const removeFirstSlash = pathRepo.startsWith('/') ? pathRepo.slice(1) : pathRepo;
-            return 'https://github.com/' + removeFirstSlash;
+            return getOnlyRepo(p.url);
         });
 
         const findRepositories = Array.from(new Set(prMap));
@@ -98,7 +109,7 @@ export class ScoreQueue implements QueueInterface<string> {
         // @ts-ignore
         prs.sort((a, b) => moment(b.createdAt).toDate() - moment(a.createdAt).toDate());
 
-        const notAccepted = getPreviousRepositories.filter(p => p.status !== 'ACCEPTED' && p.status !== 'NOT_DETERMINED').map(p => p.url);
+        const notAccepted = getPreviousRepositories.filter(p => p.status !== 'ACCEPTED' && p.status !== 'NOT_DETERMINED').map(p => getOnlyRepo(p.url));
 
         try {
             const totalScore = prMap.filter(p => notAccepted.includes(p)).length;
@@ -121,17 +132,12 @@ export class ScoreQueue implements QueueInterface<string> {
 
         for (const user of userArray) {
             const totalScore = user.issues.map(p => {
-                const path = new URL(p.url).pathname.split('/').slice(0, 3).join('/');
-                const removeFirstSlash = path.startsWith('/') ? p.url.slice(1) : path;
-                return 'https://github.com/' + removeFirstSlash;
+                return getOnlyRepo(p.url);
             }).filter(p => notAccepted.includes(p)).length;
             const newScore = +(user.score - totalScore);
 
             const disqualified = !!user.issues.find(p => {
-                const path = new URL(p.url).pathname.split('/').slice(0, 3).join('/');
-                const removeFirstSlash = path.startsWith('/') ? p.url.slice(1) : path;
-                const gitHub = 'https://github.com/' + removeFirstSlash;
-                return getPreviousRepositories.filter(p => p.status === 'BANNED').map(p => p.url).includes(gitHub);
+                return getPreviousRepositories.filter(p => p.status === 'BANNED').map(p => getOnlyRepo(p.url)).includes(getOnlyRepo(p.url));
             });
 
             try {
@@ -140,7 +146,7 @@ export class ScoreQueue implements QueueInterface<string> {
                         id: user.id
                     },
                     data: {
-                        disqualified,
+                        disqualified: disqualified,
                         score: disqualified ? 0 : newScore,
                         bonus: disqualified ? 0 : user.bonus,
                     }

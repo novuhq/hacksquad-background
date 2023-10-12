@@ -1,6 +1,7 @@
 import moment from 'moment';
 import {graphql} from "@octokit/graphql";
 import fetch from "node-fetch";
+import {getOwnerAndName} from "../../runners/queues/score.queue";
 
 const runQuery = async (query: string, token: string): Promise<any> => {
     try {
@@ -141,11 +142,10 @@ query {
 
     static async totalRepositoryStars(name: string, token: string): Promise<number> {
         try {
-            const removeFirstSlash = name.startsWith('/') ? name.slice(1) : name;
-            const [owner, nameo] = removeFirstSlash.split('/');
+            const props = getOwnerAndName(name);
             const {data}: { data: any } = await runQuery(`
                     {
-                      repository(owner:"${owner}", name:"${nameo}") {
+                      repository(owner:"${props.owner}", name:"${props.name}") {
                         stargazers {
                           totalCount
                         }
