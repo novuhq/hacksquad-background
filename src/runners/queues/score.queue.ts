@@ -62,12 +62,18 @@ export class ScoreQueue implements QueueInterface<string> {
                 }
             });
 
+            const forks = await prisma.forkGiven.findMany({
+                where: {
+                    userId: user.id
+                }
+            });
+
             const filterIssuesAwait = await Promise.all(issues.map(async p => {
                 return {issue: p, stars: (await GithubService.totalRepositoryStars(getOnlyRepo(p.url), user?.accounts?.[0]?.access_token || '')) > 200};
             }));
             const filterIssues = filterIssuesAwait.filter(p => p.stars).map(p => p.issue);
 
-            const totalStars = votes.length;
+            const totalStars = votes.length + forks.length;
             const invitedUsers = user?._count?.invited > 0 ? user?._count?.invited > 5 ? 5 : +user?._count?.invited : 0;
             const bonus = (+invitedUsers) + (+totalStars);
             const theNewScore = ((+filterIssues.length) * 3) + bonus;
