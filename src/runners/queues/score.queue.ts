@@ -3,6 +3,7 @@ import {prisma} from "../../services/database/connection";
 import {GithubService} from "../../services/github/github.service";
 import moment from 'moment';
 import createSlug from "../../services/helpers/create.slug";
+import {Console} from "inspector";
 
 export const getOnlyRepo = (url: string) => {
     const urlWithoutGithub = url.replace('https://github.com/', '').replace('https://github.com', '');
@@ -28,9 +29,10 @@ export class ScoreQueue implements QueueInterface<string> {
     }
 
     async handle(arg: string) {
+        const {id, sheet} = JSON.parse(arg);
         const data = await prisma.team.findUnique({
             where: {
-                id: arg
+                id: id
             },
             select: {
                 name: true,
@@ -68,12 +70,18 @@ export class ScoreQueue implements QueueInterface<string> {
                 }
             });
 
+            const productHunt = await prisma.productHunt.findMany({
+                where: {
+                    userId: user.id
+                }
+            });
+
             const filterIssuesAwait = await Promise.all(issues.map(async p => {
                 return {issue: p, stars: (await GithubService.totalRepositoryStars(getOnlyRepo(p.url), user?.accounts?.[0]?.access_token || '')) > 200};
             }));
             const filterIssues = filterIssuesAwait.filter(p => p.stars).map(p => p.issue);
 
-            const totalStars = votes.length + forks.length;
+            const totalStars = votes.length + forks.length + productHunt.length + ((sheet.indexOf(user.handle) > -1) ? 1 : 0);
             const invitedUsers = user?._count?.invited > 0 ? user?._count?.invited > 5 ? 5 : +user?._count?.invited : 0;
             const bonus = (+invitedUsers) + (+totalStars);
             const theNewScore = ((+filterIssues.length) * 3) + bonus;
@@ -116,14 +124,13 @@ export class ScoreQueue implements QueueInterface<string> {
 
         try {
             const totalScore = prMap.filter(p => notAccepted.includes(p)).length;
-
             await prisma.team.update({
                 where: {
-                    id: arg,
+                    id,
                 },
                 data: {
                     slug: data?.slug! || createSlug(data?.name || ''),
-                    score: score - totalScore,
+                    score: score - (totalScore * 3),
                     bonus: allBonus,
                     prs: JSON.stringify(prs)
                 }
@@ -137,7 +144,8 @@ export class ScoreQueue implements QueueInterface<string> {
             const totalScore = user.issues.map(p => {
                 return getOnlyRepo(p.url);
             }).filter(p => notAccepted.includes(p)).length;
-            const newScore = +(user.score - totalScore);
+
+            const newScore = +(user.score - (totalScore * 3));
 
             const disqualified = !!user.issues.find(p => {
                 return getPreviousRepositories.filter(p => p.status === 'BANNED').map(d => getOnlyRepo(d.url)).includes(getOnlyRepo(p.url));
