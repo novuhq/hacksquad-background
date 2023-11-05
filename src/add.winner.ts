@@ -4,7 +4,7 @@ import moment from "moment";
 (async () => {
     const add = await prisma.user.findFirst({
         where: {
-            handle: process.argv[2]
+            handle: process.argv[2],
         }
     });
 
@@ -19,7 +19,7 @@ import moment from "moment";
             month: moment().month(),
             year: moment().year(),
             lastDateClaim: moment().add(2, 'month').toDate(),
-            type: 'EXTRA'
+            type: (process.argv[3] as string) || 'EXTRA'
         }
     });
 })();
