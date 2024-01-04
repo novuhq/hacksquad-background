@@ -1,7 +1,8 @@
 repo_name: novuhq/hacksquad-background
 report_id: 4a83e435247d6262b6b5aa6385ac2083
+version: 0.1
 repo_type: Public
-timestamp: '2023-11-09T15:12:23+00:00'
+timestamp: '2024-01-04T14:57:58+00:00'
 requested_by: nevo-david
 provider: github
 branch: main
@@ -16,6 +17,7 @@ tools:
   category: Languages & Frameworks
   sub_category: Languages
   image_url: https://img.stackshare.io/service/1209/javascript.jpeg
+  detection_source_url: https://github.com/novuhq/hacksquad-background
   detection_source: Repo Metadata
 - name: TypeScript
   description: A superset of JavaScript that compiles to clean JavaScript output
@@ -26,6 +28,7 @@ tools:
   category: Languages & Frameworks
   sub_category: Languages
   image_url: https://img.stackshare.io/service/1612/bynNY5dJ.jpg
+  detection_source_url: https://github.com/novuhq/hacksquad-background
   detection_source: Repo Metadata
 - name: Node.js
   description: A platform built on Chrome's JavaScript runtime for easily building
@@ -36,6 +39,7 @@ tools:
   category: Languages & Frameworks
   sub_category: Frameworks (Full Stack)
   image_url: https://img.stackshare.io/service/1011/n1JRsFeB_400x400.png
+  detection_source_url: https://github.com/novuhq/hacksquad-background/blob/main/package.json
   detection_source: package.json
   last_updated_by: Nevo David
   last_updated_on: 2022-09-27 09:07:58.000000000 Z
@@ -49,7 +53,7 @@ tools:
   category: Data Stores
   sub_category: Object Relational Mapper (ORM)
   image_url: https://img.stackshare.io/service/8680/Logo_Symbol_White.jpg
-  detection_source_url: package-lock.json
+  detection_source_url: https://github.com/novuhq/hacksquad-background/blob/main/package-lock.json
   detection_source: package.json
   last_updated_by: Nevo David
   last_updated_on: 2022-09-27 09:07:58.000000000 Z
@@ -62,6 +66,7 @@ tools:
   category: Build, Test, Deploy
   sub_category: Server Configuration and Automation
   image_url: https://img.stackshare.io/service/8067/default_90dcb1286af7685c68df319c764b80704df1155b.png
+  detection_source_url: https://github.com/novuhq/hacksquad-background/blob/main/package.json
   detection_source: package.json
   last_updated_by: Nevo David
   last_updated_on: 2022-09-27 09:07:58.000000000 Z
@@ -73,6 +78,7 @@ tools:
   category: Build, Test, Deploy
   sub_category: Version Control System
   image_url: https://img.stackshare.io/service/1046/git.png
+  detection_source_url: https://github.com/novuhq/hacksquad-background
   detection_source: Repo Metadata
 - name: Octokit
   description: GitHub API Client Library for .NET
@@ -82,6 +88,7 @@ tools:
   category: Build, Test, Deploy
   sub_category: Tools for GitHub
   image_url: https://img.stackshare.io/service/9827/octokit-dotnet_2.png
+  detection_source_url: https://github.com/novuhq/hacksquad-background/blob/main/package.json
   detection_source: package.json
   last_updated_by: Nevo David
   last_updated_on: 2023-09-10 06:27:42.000000000 Z
@@ -93,6 +100,7 @@ tools:
   category: Build, Test, Deploy
   sub_category: Front End Package Manager
   image_url: https://img.stackshare.io/service/1120/lejvzrnlpb308aftn31u.png
+  detection_source_url: https://github.com/novuhq/hacksquad-background/blob/main/package.json
   detection_source: package.json
   last_updated_by: Nevo David
   last_updated_on: 2022-09-27 09:07:58.000000000 Z
@@ -105,7 +113,7 @@ tools:
   category: Libraries
   sub_category: Javascript Utilities & Libraries
   image_url: https://img.stackshare.io/service/2438/lodash.png
-  detection_source_url: package-lock.json
+  detection_source_url: https://github.com/novuhq/hacksquad-background/blob/main/package-lock.json
   detection_source: package.json
   last_updated_by: Nevo David
   last_updated_on: 2022-10-06 11:13:51.000000000 Z
@@ -120,7 +128,7 @@ tools:
   category: Libraries
   sub_category: Javascript Utilities & Libraries
   image_url: https://img.stackshare.io/service/3643/Xrtdc94q_400x400.png
-  detection_source_url: package-lock.json
+  detection_source_url: https://github.com/novuhq/hacksquad-background/blob/main/package-lock.json
   detection_source: package.json
   last_updated_by: Nevo David
   last_updated_on: 2022-09-27 09:07:58.000000000 Z
@@ -133,6 +141,7 @@ tools:
   category: Languages & Frameworks
   sub_category: Languages
   image_url: https://img.stackshare.io/service/4631/default_c2062d40130562bdc836c13dbca02d318205a962.png
+  detection_source_url: https://github.com/novuhq/hacksquad-background
   detection_source: Repo Metadata
 - name: axios
   description: Promise based HTTP client for the browser and node.js
@@ -144,7 +153,7 @@ tools:
   category: Libraries
   sub_category: Javascript Utilities & Libraries
   image_url: https://img.stackshare.io/no-img-open-source.png
-  detection_source_url: package-lock.json
+  detection_source_url: https://github.com/novuhq/hacksquad-background/blob/main/package-lock.json
   detection_source: package.json
   last_updated_by: Nevo David
   last_updated_on: 2022-09-27 09:07:58.000000000 Z
@@ -158,7 +167,7 @@ tools:
   category: Libraries
   sub_category: npm Packages
   image_url: https://img.stackshare.io/package/15945/default_54b691c123fc8979741e800e4dcd3936c0f3b246.png
-  detection_source_url: package-lock.json
+  detection_source_url: https://github.com/novuhq/hacksquad-background/blob/main/package-lock.json
   detection_source: package.json
   last_updated_by: Nevo David
   last_updated_on: 2023-10-03 12:23:39.000000000 Z
@@ -172,7 +181,7 @@ tools:
   category: Libraries
   sub_category: npm Packages
   image_url: https://img.stackshare.io/package/15809/default_5e5e8ac63beda29f31f1844df64d4b8247570a66.png
-  detection_source_url: package-lock.json
+  detection_source_url: https://github.com/novuhq/hacksquad-background/blob/main/package-lock.json
   detection_source: package.json
   last_updated_by: Nevo David
   last_updated_on: 2023-10-03 12:25:28.000000000 Z
@@ -186,7 +195,7 @@ tools:
   category: Libraries
   sub_category: npm Packages
   image_url: https://img.stackshare.io/package/16459/default_5ffcf8d02a3454bd25d27d236025c6d078c3b672.png
-  detection_source_url: package-lock.json
+  detection_source_url: https://github.com/novuhq/hacksquad-background/blob/main/package-lock.json
   detection_source: package.json
   last_updated_by: Nevo David
   last_updated_on: 2023-10-03 12:25:28.000000000 Z
@@ -200,7 +209,7 @@ tools:
   category: Libraries
   sub_category: npm Packages
   image_url: https://img.stackshare.io/package/16493/default_e8b43b4cc93dd2989e630d56550f589fccdcda03.png
-  detection_source_url: package-lock.json
+  detection_source_url: https://github.com/novuhq/hacksquad-background/blob/main/package-lock.json
   detection_source: package.json
   last_updated_by: Nevo David
   last_updated_on: 2022-09-27 09:07:58.000000000 Z
@@ -214,7 +223,7 @@ tools:
   category: Libraries
   sub_category: npm Packages
   image_url: https://img.stackshare.io/package/16522/default_4e3259350c525d1d859fa80a938000081d7c9db8.png
-  detection_source_url: package-lock.json
+  detection_source_url: https://github.com/novuhq/hacksquad-background/blob/main/package-lock.json
   detection_source: package.json
   last_updated_by: Nevo David
   last_updated_on: 2022-09-27 09:07:58.000000000 Z
@@ -228,7 +237,7 @@ tools:
   category: Libraries
   sub_category: npm Packages
   image_url: https://img.stackshare.io/package/15847/default_4479dbac220be99e50e724b2df6cf415241d71fd.png
-  detection_source_url: package-lock.json
+  detection_source_url: https://github.com/novuhq/hacksquad-background/blob/main/package-lock.json
   detection_source: package.json
   last_updated_by: Nevo David
   last_updated_on: 2022-09-27 09:07:58.000000000 Z
@@ -242,7 +251,7 @@ tools:
   category: Libraries
   sub_category: npm Packages
   image_url: https://img.stackshare.io/package/15978/default_f49d4c116f8ea0155f4d92673b084378bba02760.png
-  detection_source_url: package-lock.json
+  detection_source_url: https://github.com/novuhq/hacksquad-background/blob/main/package-lock.json
   detection_source: package.json
   last_updated_by: Nevo David
   last_updated_on: 2023-10-03 12:25:28.000000000 Z
@@ -256,7 +265,7 @@ tools:
   category: Libraries
   sub_category: npm Packages
   image_url: https://img.stackshare.io/package/17126/default_0ffbf6d9ee2940fe94be8424fd9afff068fff458.png
-  detection_source_url: package-lock.json
+  detection_source_url: https://github.com/novuhq/hacksquad-background/blob/main/package-lock.json
   detection_source: package.json
   last_updated_by: Nevo David
   last_updated_on: 2023-10-03 12:25:28.000000000 Z
@@ -270,7 +279,7 @@ tools:
   category: Libraries
   sub_category: npm Packages
   image_url: https://img.stackshare.io/package/15830/default_6743ba96cf149a3c3c68a185199f9705d6eff80e.png
-  detection_source_url: package-lock.json
+  detection_source_url: https://github.com/novuhq/hacksquad-background/blob/main/package-lock.json
   detection_source: package.json
   last_updated_by: Nevo David
   last_updated_on: 2023-10-03 12:25:28.000000000 Z
